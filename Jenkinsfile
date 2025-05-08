@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'gym-membership-app'
         DOCKER_TAG = "${BUILD_NUMBER}"
-        DOCKER_CREDENTIALS = credentials('docker-hub-credentials')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
         PROJECT_DIR = '/var/lib/jenkins/app'
     }
     

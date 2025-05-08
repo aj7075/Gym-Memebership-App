@@ -1,0 +1,501 @@
+# Gym Membership App - Complete Project Code
+
+## 1. Project Structure
+```
+gym-membership-app/
+├── app/
+│   ├── static/
+│   │   └── css/
+│   │       └── style.css
+│   ├── templates/
+│   │   ├── base.html
+│   │   ├── index.html
+│   │   ├── register.html
+│   │   └── contact.html
+│   ├── app.py
+│   └── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
+├── Jenkinsfile
+└── terraform/
+    └── main.tf
+```
+
+## 2. Flask Application (app.py)
+```python
+from flask import Flask, render_template, request, redirect, url_for, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+
+app = Flask(__name__)
+app.secret_key = 'your-secret-key'  # Change this in production
+
+# Mock database (replace with real database in production)
+users = {}
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        if username in users:
+            flash('Username already exists!')
+            return redirect(url_for('register'))
+        
+        users[username] = generate_password_hash(password)
+        flash('Registration successful!')
+        return redirect(url_for('index'))
+    
+    return render_template('register.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+```
+
+## 3. HTML Templates
+
+### base.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gym Membership{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('register') }}">Register</a></li>
+            <li><a href="{{ url_for('contact') }}">Contact</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 Gym Membership App</p>
+    </footer>
+</body>
+</html>
+```
+
+### index.html
+```html
+{% extends "base.html" %}
+
+{% block title %}Home - Gym Membership{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Welcome to Gym Membership</h1>
+    <p>Your journey to fitness starts here!</p>
+    <a href="{{ url_for('register') }}" class="cta-button">Join Now</a>
+</div>
+
+<div class="features">
+    <div class="feature">
+        <h2>Premium Equipment</h2>
+        <p>State-of-the-art fitness equipment</p>
+    </div>
+    <div class="feature">
+        <h2>Expert Trainers</h2>
+        <p>Professional guidance and support</p>
+    </div>
+    <div class="feature">
+        <h2>Flexible Plans</h2>
+        <p>Choose the plan that fits your needs</p>
+    </div>
+</div>
+{% endblock %}
+```
+
+### register.html
+```html
+{% extends "base.html" %}
+
+{% block title %}Register - Gym Membership{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Register</h1>
+    <form method="POST" action="{{ url_for('register') }}">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="submit-button">Register</button>
+    </form>
+</div>
+{% endblock %}
+```
+
+### contact.html
+```html
+{% extends "base.html" %}
+
+{% block title %}Contact - Gym Membership{% endblock %}
+
+{% block content %}
+<div class="contact-container">
+    <h1>Contact Us</h1>
+    <div class="contact-info">
+        <p>Email: info@gymmembership.com</p>
+        <p>Phone: (555) 123-4567</p>
+        <p>Address: 123 Fitness Street, Gym City, GC 12345</p>
+    </div>
+</div>
+{% endblock %}
+```
+
+## 4. CSS Styles (style.css)
+```css
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Navigation */
+nav {
+    background: #333;
+    padding: 1rem;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul li {
+    margin: 0 1rem;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+/* Main content */
+main {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Hero section */
+.hero {
+    text-align: center;
+    padding: 4rem 0;
+    background: #f4f4f4;
+    margin-bottom: 2rem;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 1rem;
+}
+
+/* Features section */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+.feature {
+    text-align: center;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-radius: 5px;
+}
+
+/* Forms */
+.form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-radius: 5px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 0.75rem;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* Flash messages */
+.flash {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 3px;
+    color: #721c24;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 1rem;
+    background: #333;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+```
+
+## 5. Docker Configuration
+
+### Dockerfile
+```dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+COPY app/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app/ .
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
+```
+
+### docker-compose.yml
+```yaml
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - "80:5000"
+    environment:
+      - FLASK_ENV=production
+```
+
+## 6. Jenkins Pipeline (Jenkinsfile)
+```groovy
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_IMAGE = 'gym-membership-app'
+        DOCKER_TAG = "${BUILD_NUMBER}"
+    }
+    
+    stages {
+        stage('Build Docker Image') {
+            steps {
+                dir('/var/lib/jenkins/app') {
+                    sh 'docker-compose build'
+                }
+            }
+        }
+        
+        stage('Run Tests') {
+            steps {
+                sh 'python -m pytest tests/'
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                sh 'docker-compose up -d'
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
+```
+
+## 7. Terraform Configuration (main.tf)
+```hcl
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_instance" "gym_app" {
+  ami           = "ami-0c55b159cbfafe1f0"  # Amazon Linux 2
+  instance_type = "t2.micro"
+  
+  tags = {
+    Name = "gym-membership-app"
+  }
+  
+  user_data = <<-EOF
+              #!/bin/bash
+              yum update -y
+              yum install -y docker
+              service docker start
+              usermod -a -G docker ec2-user
+              curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              chmod +x /usr/local/bin/docker-compose
+              EOF
+}
+
+resource "aws_security_group" "gym_app_sg" {
+  name        = "gym-app-sg"
+  description = "Security group for Gym Membership App"
+  
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+```
+
+## 8. Requirements (requirements.txt)
+```
+Flask==2.0.1
+Werkzeug==2.0.1
+Jinja2==3.0.1
+MarkupSafe==2.0.1
+itsdangerous==2.0.1
+click==8.0.1
+```
+
+## 9. .gitignore
+```
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.log
+.env
+```
+
+This is the complete code for the Gym Membership App project. The project includes:
+1. A Flask web application
+2. HTML templates with CSS styling
+3. Docker configuration
+4. Jenkins CI/CD pipeline
+5. Terraform infrastructure as code
+6. All necessary configuration files
+
+To run the project:
+1. Install dependencies: `pip install -r app/requirements.txt`
+2. Run with Docker: `docker-compose up`
+3. Or run directly: `python app/app.py`
+
+The application will be available at `http://localhost:5000` or `http://localhost:80` when using Docker. 

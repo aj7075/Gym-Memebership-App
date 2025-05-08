@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="hero-section text-center py-5 mb-5">
+    <h1 class="display-4">Welcome to FitLife Gym</h1>
+    <p class="lead">Transform your life with our state-of-the-art facilities and expert trainers</p>
+    <a href="/register" class="btn btn-primary btn-lg">Join Now</a>
+</div>
+
+<section class="packages mb-5">
+    <h2 class="text-center mb-4">Our Membership Packages</h2>
+    <div class="row">
+        {% for package in packages %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title">{{ package.name }}</h3>
+                    <h4 class="card-subtitle mb-3 text-primary">{{ package.price }}</h4>
+                    <ul class="list-unstyled">
+                        {% for feature in package.features %}
+                        <li class="mb-2">✓ {{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="/register" class="btn btn-outline-primary w-100">Select Plan</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="trainers">
+    <h2 class="text-center mb-4">Our Expert Trainers</h2>
+    <div class="row">
+        {% for trainer in trainers %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ trainer.name }}</h3>
+                    <p class="text-muted">{{ trainer.specialty }}</p>
+                    <p>Experience: {{ trainer.experience }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %} 

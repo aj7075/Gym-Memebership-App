@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Gym Membership Web App with CI/CD Pipeline
 
 This project implements a complete DevOps pipeline for a Gym Membership Web Application using Flask, Docker, Jenkins, and AWS.
@@ -141,3 +142,6 @@ This project implements a complete DevOps pipeline for a Gym Membership Web Appl
 ## License
 
 This project is licensed under the MIT License. 
+=======
+# Gym-Memebership-App
+>>>>>>> 68fd49dab3def6719348c319e285342b038a00c3

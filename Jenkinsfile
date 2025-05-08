@@ -59,6 +59,7 @@ pipeline {
     
     post {
         always {
+            node {
             sh "docker logout"
             cleanWs()
         }

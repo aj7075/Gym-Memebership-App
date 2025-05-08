@@ -6,6 +6,7 @@ pipeline {
         DOCKER_TAG = "${BUILD_NUMBER}"
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
         PROJECT_DIR = '/var/lib/jenkins/app'
+        EC2_HOST = '15.206.122.191'
     }
 
     stages {
